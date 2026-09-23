@@ -1,0 +1,448 @@
+
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IdeaMatch</title>
+<style>
+:root{--bg:#f6f8fc;--card:#fff;--ink:#102033;--muted:#64748b;--line:#dfe6ef;--blue:#2563eb;--blue2:#eaf1ff;--red:#dc2626;--green:#15803d}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+button,input,textarea,select{font:inherit}button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px}.primary{background:var(--blue);color:#fff}.secondary{background:#fff;border:1px solid var(--line);color:var(--ink)}.danger{background:#fee2e2;color:#991b1b}.good{background:#dcfce7;color:#166534}
+input,textarea,select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}textarea{min-height:100px;resize:vertical}
+label{display:block;font-size:13px;font-weight:700;margin:12px 0 6px}.muted{color:var(--muted)}.small{font-size:12px}.hidden{display:none!important}
+.auth{min-height:100vh;display:grid;place-items:center;padding:24px;background:linear-gradient(135deg,#f8fbff,#edf3ff)}.auth-card{width:min(900px,100%);background:#fff;border:1px solid var(--line);border-radius:24px;box-shadow:0 20px 60px #0f172a18;overflow:hidden;display:grid;grid-template-columns:1fr 1fr}.auth-intro{padding:42px;background:#0f1f3d;color:#fff}.auth-form{padding:34px}.brand{font-weight:900;font-size:26px}.role-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}.role{border:1px solid var(--line);background:#fff;text-align:left;padding:16px}.role.active{border-color:var(--blue);background:var(--blue2);color:#1749a8}
+.app{min-height:100vh;display:grid;grid-template-columns:245px 1fr}.side{background:#0f1f3d;color:#fff;padding:20px 14px;position:sticky;top:0;height:100vh}.side .brand{padding:6px 10px 20px}.nav button{width:100%;text-align:left;margin:3px 0;background:transparent;color:#cbd5e1}.nav button.active,.nav button:hover{background:#ffffff18;color:#fff}.main{min-width:0}.top{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:10}.user{display:flex;align-items:center;gap:10px}.avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--blue2);color:var(--blue);font-weight:900}.content{padding:24px;max-width:1250px}.page{display:none}.page.active{display:block}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}.stat b{font-size:28px}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.between{justify-content:space-between}.tag{display:inline-block;padding:5px 8px;border-radius:999px;background:var(--blue2);color:#1749a8;font-size:12px;margin:3px}.score{font-weight:900;color:var(--blue)}.notice{padding:11px 13px;border-radius:10px;background:#f8fafc;border:1px solid var(--line);margin:10px 0}.review{border-top:1px solid var(--line);padding:10px 0}.task-owner{font-size:12px;color:var(--muted)}.readonly{background:#f8fafc}.ai-fab{position:fixed;right:22px;bottom:22px;width:56px;height:56px;border-radius:50%;background:var(--blue);color:#fff;font-weight:900;box-shadow:0 12px 30px #0003}.ai{display:none;position:fixed;right:22px;bottom:88px;width:min(380px,calc(100vw - 28px));height:480px;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 20px 55px #0003;z-index:30;overflow:hidden}.ai.open{display:flex;flex-direction:column}.ai-head{padding:14px;border-bottom:1px solid var(--line)}.ai-msgs{padding:14px;overflow:auto;flex:1}.msg{padding:9px 11px;border-radius:12px;margin:6px 0;max-width:88%}.msg.bot{background:#eef4ff}.msg.me{background:var(--blue);color:#fff;margin-left:auto}.ai-send{display:grid;grid-template-columns:1fr auto;gap:8px;padding:12px;border-top:1px solid var(--line)}
+@media(max-width:850px){.auth-card{grid-template-columns:1fr}.auth-intro{display:none}.app{grid-template-columns:78px 1fr}.side .brand span,.nav span{display:none}.grid,.grid2{grid-template-columns:1fr}.content{padding:14px}.top{padding:0 14px}}
+
+.access-panel{display:none;position:fixed;right:20px;top:76px;z-index:40;width:260px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 15px 40px #0002}.access-panel.open{display:block}
+body.contrast{--bg:#000;--card:#000;--ink:#fff;--muted:#ddd;--line:#fff;--blue:#ff0;--blue2:#222}body.contrast .side{background:#000;border-right:1px solid #fff}body.simple .muted{display:none}
+.notify{position:fixed;right:22px;top:78px;z-index:35;width:min(360px,calc(100vw - 30px));background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 15px 40px #0002;display:none}.notify.open{display:block}
+.progress{height:9px;background:#e5e7eb;border-radius:999px;overflow:hidden}.progress>i{display:block;height:100%;background:var(--blue)}
+.question{padding:12px;border:1px solid var(--line);border-radius:12px;margin:8px 0;background:#fafcff}.missing{color:#b45309;font-size:13px}
+
+
+/* Added case-alignment features */
+.case-tools{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+.case-tools select,.case-tools input{width:auto;min-width:180px}
+.edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.live-score{position:sticky;top:82px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--card);margin-bottom:12px}
+.recommend{border-left:4px solid var(--blue)}
+.rank-badge{display:inline-block;padding:5px 9px;border-radius:999px;background:var(--blue2);color:#1749a8;font-size:12px;font-weight:700}
+@media(max-width:700px){.edit-grid{grid-template-columns:1fr}.case-tools select,.case-tools input{width:100%}}
+
+
+body.contrast .top,body.contrast .access-panel,body.contrast .notify,body.contrast .ai,
+body.contrast input,body.contrast textarea,body.contrast select,body.contrast .secondary,
+body.contrast .card,body.contrast .question{background:#000!important;color:#fff!important;border-color:#fff!important}
+body.contrast #topName,body.contrast #topOrg,body.contrast #pageTitle,body.contrast #roleText{color:#fff!important}
+body.contrast #langSelect{background:#000!important;color:#fff!important;border:2px solid #fff!important}
+body.contrast #langSelect option{background:#000!important;color:#fff!important}
+body.contrast .avatar{background:#fff!important;color:#000!important}
+body.contrast .primary{background:#ff0!important;color:#000!important}
+</style>
+</head>
+<body>
+
+<section id="auth" class="auth">
+ <div class="auth-card">
+  <div class="auth-intro">
+   <div class="brand">IdeaMatch</div>
+   <h1>Идеяны мүмкіндікке айналдыратын орта</h1>
+   <p style="color:#cbd5e1">Бизнес нақты тапсырма жариялайды. Студент тапсырманы таңдап, шешім ұсынады. Әр қолданушы өз рөліне сәйкес мүмкіндіктерді ғана пайдаланады.</p>
+  </div>
+  <div class="auth-form">
+    <div class="row" style="justify-content:flex-end;margin-bottom:14px">
+      <label for="authLangSelect" style="margin:0 6px 0 0">Language</label>
+      <select id="authLangSelect" style="width:auto;min-width:96px" onchange="setLanguage(this.value)" aria-label="Language">
+        <option value="kk">KZ</option><option value="ru">RU</option><option value="en">EN</option>
+      </select>
+    </div>
+   <h2>Профильге кіру</h2>
+    <div class="notice" id="motivationText"><b>Идеядан — нақты мүмкіндікке.</b><br>Бизнеске шешім, студентке тәжірибе: IdeaMatch-та әр жақсы идея өз командасын таба алады.</div>
+   <p class="muted">Demo нұсқада аккаунт браузерде сақталады.</p>
+   <div class="role-cards">
+    <button class="role role-choice active" data-role="student" onclick="pickRole('student')"><b>Студент</b><br><span class="small muted">Тапсырма таңдау, proposal, бағалау</span></button>
+    <button class="role role-choice" data-role="business" onclick="pickRole('business')"><b>Бизнес өкілі</b><br><span class="small muted">Тапсырма құру, proposal қабылдау</span></button>
+   </div>
+   <label>Аты-жөні</label><input id="authName" placeholder="Мысалы: Асылай Құралбай">
+   <label id="authOrgLabel">Мамандық / команда</label><input id="authOrg" placeholder="Физика-Информатика">
+   <div id="industryWrap" class="hidden"><label>Бизнес саласы</label><select id="authIndustry">
+    <option value="EdTech">EdTech / Білім</option><option value="IT">IT / Software</option>
+    <option value="FinTech">FinTech / Қаржы</option><option value="E-commerce">E-commerce / Сауда</option>
+    <option value="HealthTech">HealthTech / Денсаулық</option><option value="Marketing">Маркетинг</option>
+    <option value="Logistics">Логистика</option><option value="Other">Басқа</option>
+   </select></div>
+   <button class="primary" style="width:100%;margin-top:16px" onclick="login()">Кіру</button>
+  </div>
+ </div>
+</section>
+
+<div id="app" class="app hidden">
+ <aside class="side">
+  <div class="brand">I<span>deaMatch</span></div>
+  <nav id="nav" class="nav"></nav>
+ </aside>
+ <main class="main">
+  <header class="top">
+   <div><b id="pageTitle">Басты бет</b><div id="roleText" class="small muted"></div></div>
+   <div class="row">
+    <select id="langSelect" style="width:auto" onchange="setLanguage(this.value)" aria-label="Language"><option value="kk">KZ</option><option value="ru">RU</option><option value="en">EN</option></select>
+    <button class="secondary" onclick="toggleNotifications()" aria-label="Notifications">🔔</button>
+    <button class="secondary" onclick="toggleAccess()" aria-label="Accessibility">Aa</button>
+   </div>
+   <div class="user"><div id="avatar" class="avatar">A</div><div><b id="topName"></b><div id="topOrg" class="small muted"></div></div><button class="secondary" onclick="logout()">Шығу</button></div>
+  </header>
+  <div class="content">
+   <section id="dashboard" class="page active"></section>
+   <section id="create" class="page"></section>
+   <section id="catalog" class="page"></section>
+   <section id="proposals" class="page"></section>
+   <section id="profiles" class="page"></section>
+   <section id="reviews" class="page"></section>
+   <section id="myprofile" class="page"></section>
+   <section id="rating" class="page"></section>
+   <section id="deadlines" class="page"></section>
+
+  </div>
+ </main>
+</div>
+
+
+<div id="accessPanel" class="access-panel">
+ <b>Қолжетімділік</b>
+ <div class="row" style="margin-top:10px"><button class="secondary" onclick="changeFont(-1)">A−</button><button class="secondary" onclick="changeFont(1)">A+</button></div>
+ <button class="secondary" style="width:100%;margin-top:8px" onclick="document.body.classList.toggle('contrast')">Жоғары контраст</button>
+ <button class="secondary" style="width:100%;margin-top:8px" onclick="document.body.classList.toggle('simple')">Қарапайым режим</button>
+ <button class="secondary" style="width:100%;margin-top:8px" onclick="readPage()">Мәтінді оқу</button>
+</div>
+<div id="notifyPanel" class="notify"></div>
+
+<button id="aiFab" class="ai-fab hidden" onclick="toggleAI()">AI</button>
+<div id="ai" class="ai">
+ <div class="ai-head row between"><div><b>AI көмекші</b><div class="small muted">IdeaMatch бойынша көмек</div></div><button class="secondary" onclick="toggleAI()">×</button></div>
+ <div id="aiMsgs" class="ai-msgs"><div class="msg bot">Сәлем! Task Card, proposal, профиль және рейтинг бойынша көмектесе аламын.</div></div>
+ <div class="ai-send"><input id="aiInput" placeholder="Сұрағыңызды жазыңыз..." onkeydown="if(event.key==='Enter')sendAI()"><button class="primary" onclick="sendAI()">Жіберу</button></div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+let selectedRole=localStorage.getItem("im_selected_role")||"student";
+let user=JSON.parse(localStorage.getItem("im_user")||"null");
+let tasks=JSON.parse(localStorage.getItem("im_tasks")||"null")||[
+ {id:1,title:"Практикаға өтініш беру процесін жеңілдету",company:"TechNova",owner:"Айдана Серік",ownerId:"demo-business-1",desc:"Студенттердің практикаға өтініш беру жолын жеңілдететін цифрлық шешім қажет.",users:"Университет студенттері және HR мамандары",data:"Өтініш формалары, вакансиялар тізімі және demo студент профильдері",constraints:"Web MVP, 5 сағаттық прототип, жеке деректерді жарияламау",expected:"Студент практика орнын тауып, бір интерфейстен өтініш жібере алады",success:"Өтініш беру flow-ы толық жұмыс істейді және 3 қадамнан аспайды",contact:"Айдана Серік, аптасына 2 рет feedback",deadline:"2026-10-10",skills:["UI/UX","JavaScript"],score:100,status:"Ашық",industry:"EdTech"},
+ {id:2,title:"Клиент пікірлерін талдау",company:"QazMarket",owner:"Данияр Асқар",ownerId:"demo-business-2",desc:"Клиент пікірлерін жинап, негізгі мәселелерді көрсететін прототип.",users:"Маркетинг және customer support командасы",data:"Анонимдендірілген 500 demo пікір, категориялар",constraints:"Жеке дерексіз, нәтижені dashboard-та көрсету",expected:"Пікірлерді тақырыптарға бөліп, негізгі проблемаларды көрсету",success:"Кемінде 5 категория және әр категорияға қысқа summary",contact:"Данияр Асқар, demo кезінде feedback",deadline:"2026-10-18",skills:["Python","Analytics"],score:100,status:"Ашық",industry:"E-commerce"},
+ {id:3,title:"Campus Navigation Assistant",company:"Alem University",owner:"Мадина Ермек",ownerId:"demo-business-3",desc:"Жаңа студенттерге кампуста аудиториялар мен қызметтерді тез табуға көмектесу.",users:"1-курс студенттері және қонақтар",data:"Корпус картасы, аудиториялар тізімі, қызмет нүктелері",constraints:"Mobile-first web, GPS міндетті емес",expected:"Іздеу және маршрутты түсінікті көрсету",success:"Demo-да 5 негізгі нүктеге маршрут табу",contact:"Мадина Ермек, күнделікті 15 минут feedback",deadline:"2026-10-22",skills:["JavaScript","UX","Maps"],score:100,status:"Ашық",industry:"Education"},
+ {id:4,title:"Шағын бизнеске тапсырыс dashboard",company:"Nomad Coffee",owner:"Арман Қали",ownerId:"demo-business-4",desc:"Күнделікті тапсырыстар мен ең танымал өнімдерді бір экранда бақылау.",users:"Кафе менеджері және иесі",data:"Demo CSV: күн, өнім, саны, сома",constraints:"Қарапайым web dashboard, күрделі авторизациясыз",expected:"Сату динамикасы, top өнімдер және күндік summary",success:"CSV demo деректерінен 3 негізгі көрсеткіш дұрыс есептеледі",contact:"Арман Қали, финалдық demo feedback",deadline:"2026-10-25",skills:["JavaScript","Charts","Data"],score:100,status:"Ашық",industry:"Retail"}
+];
+let proposals=JSON.parse(localStorage.getItem("im_proposals")||"[]");
+let peerReviews=JSON.parse(localStorage.getItem("im_peer_reviews")||"[]");
+let profiles=JSON.parse(localStorage.getItem("im_profiles")||"null")||[
+ {id:"s-assylay",role:"student",name:"Асылай Құралбай",org:"Физика-Информатика",skills:"HTML, CSS, JavaScript, Python",projects:"IdeaMatch, AI Lesson Studio",github:"",bio:"Студенттік цифрлық жобалармен жұмыс істейді."},
+ {id:"s-aruzhan",role:"student",name:"Аружан Тұрғанбек",org:"Студенттік команда",skills:"Design, Research",projects:"Education projects",github:"",bio:"UI/UX және зерттеу бағытында жұмыс істейді."},
+ {id:"b-demo",role:"business",name:"Айдана Серік",org:"TechNova",skills:"EdTech",projects:"3 жарияланған тапсырма",github:"",bio:"Студенттік командалармен жұмыс істейтін бизнес өкілі."}
+];
+
+
+const directionDemoTasks=[
+{id:101,title:"AI оқу ассистенті",company:"BilimLab",owner:"Назерке Әли",ownerId:"seed-edtech-1",desc:"Студентке тақырып бойынша қысқа түсіндірме және оқу жоспарын ұсынатын web assistant.",users:"Колледж және университет студенттері",data:"Demo пән тақырыптары, FAQ және оқу материалдарының атаулары",constraints:"AI факт ойдан қоспайды; web demo; жеке деректерсіз",expected:"Тақырыпты таңдап, құрылымдалған оқу ұсынысын алу",success:"5 demo тақырыпта түсінікті нәтиже және source note көрсетіледі",contact:"Назерке Әли, аптасына 2 feedback",deadline:"2026-10-15",skills:["JavaScript","AI","UX"],score:100,status:"Ашық",industry:"EdTech"},
+{id:102,title:"Курс прогресін бақылау панелі",company:"StudyFlow",owner:"Ернар Марат",ownerId:"seed-edtech-2",desc:"Студент пен менторға курс прогресін бір экраннан бақылауға көмектесу.",users:"Студенттер және менторлар",data:"Demo сабақтар, completion және quiz нәтижелері",constraints:"Қарапайым dashboard; mobile responsive",expected:"Прогресс, әлсіз тақырыптар және келесі қадам көрінеді",success:"Негізгі 4 көрсеткіш дұрыс есептеледі",contact:"Ернар Марат, demo feedback",deadline:"2026-10-20",skills:["HTML","JavaScript","Charts"],score:100,status:"Ашық",industry:"EdTech"},
+
+{id:103,title:"IT support өтінімдерін басқару",company:"CloudStep",owner:"Руслан Нұр",ownerId:"seed-it-1",desc:"Қызметкерлердің IT support өтінімдерін тіркеп, приоритет бойынша көрсету.",users:"Компания қызметкерлері және IT support",data:"Demo ticket тізімі және категориялар",constraints:"Web MVP; күрделі auth қажет емес",expected:"Ticket құру, статус және приоритетті бақылау",success:"Create → assign → close flow толық жұмыс істейді",contact:"Руслан Нұр, күнделікті feedback",deadline:"2026-10-17",skills:["JavaScript","UI","REST"],score:100,status:"Ашық",industry:"IT"},
+{id:104,title:"API monitoring dashboard",company:"DevCore",owner:"Әлия Сапар",ownerId:"seed-it-2",desc:"Demo API сервистерінің статусын және response time көрсететін dashboard.",users:"Developer және DevOps командасы",data:"Demo endpoint status JSON",constraints:"Нақты production credential қолданылмайды",expected:"Service status, latency және incident history",success:"5 demo service үшін мониторинг дұрыс көрсетіледі",contact:"Әлия Сапар, техникалық консультация",deadline:"2026-10-24",skills:["JavaScript","API","Charts"],score:100,status:"Ашық",industry:"IT"},
+
+{id:105,title:"Жеке бюджет жоспарлаушы",company:"Qarzhy",owner:"Аян Бек",ownerId:"seed-fin-1",desc:"Пайдаланушыға demo кіріс пен шығынды категория бойынша жоспарлауға көмектесу.",users:"Жас мамандар және студенттер",data:"Demo транзакциялар CSV",constraints:"Нақты банк деректері қолданылмайды",expected:"Бюджет, категория және айлық summary",success:"Кіріс/шығын балансы және 3 аналитика көрсеткіші дұрыс",contact:"Аян Бек, апталық feedback",deadline:"2026-10-19",skills:["JavaScript","Data","UX"],score:100,status:"Ашық",industry:"FinTech"},
+{id:106,title:"Шығын аномалиясын белгілеу",company:"FinSight",owner:"Диас Омар",ownerId:"seed-fin-2",desc:"Demo транзакциялар ішінен әдеттен тыс шығындарды қарапайым ережемен белгілеу.",users:"Қаржы аналитиктері",data:"Анонимдендірілген demo транзакциялар",constraints:"Тек demo data; автоматты қаржылық шешім жоқ",expected:"Күдікті жазбаларды reason-пен белгілеу",success:"Белгіленген әр жазбаға түсіндірме көрсетіледі",contact:"Диас Омар, data consultation",deadline:"2026-10-27",skills:["Python","Analytics","JavaScript"],score:100,status:"Ашық",industry:"FinTech"},
+
+{id:107,title:"Себеттен кетуді азайту прототипі",company:"ShopGo",owner:"Мөлдір Асан",ownerId:"seed-ecom-1",desc:"Checkout процесіндегі артық қадамдарды анық көрсететін UX прототип.",users:"Онлайн дүкен сатып алушылары",data:"Demo checkout funnel",constraints:"Төлем интеграциясы қажет емес",expected:"Қысқа checkout flow және abandon себептері",success:"Checkout 3 негізгі қадаммен аяқталады",contact:"Мөлдір Асан, UX feedback",deadline:"2026-10-16",skills:["UX","HTML","JavaScript"],score:100,status:"Ашық",industry:"E-commerce"},
+{id:108,title:"Тауар recommendation витринасы",company:"MarketOne",owner:"Самат Ер",ownerId:"seed-ecom-2",desc:"Demo қызығушылықтарға сүйеніп тауарларды ұсынатын витрина.",users:"Онлайн дүкен клиенттері",data:"Demo product catalog және category preferences",constraints:"Sensitive profiling қолданылмайды",expected:"Түсіндірмесі бар recommendation блок",success:"Әр ұсыныста неге ұсынылғаны көрсетіледі",contact:"Самат Ер, product feedback",deadline:"2026-10-28",skills:["JavaScript","UI","Data"],score:100,status:"Ашық",industry:"E-commerce"},
+
+{id:109,title:"Клиника кезегін жоспарлау",company:"MedLine Demo",owner:"Жанар Ай",ownerId:"seed-health-1",desc:"Demo қабылдау уақыттарын ыңғайлы көруге арналған интерфейс.",users:"Пациенттер және әкімші",data:"Demo дәрігер кестесі",constraints:"Медициналық диагноз немесе нақты patient data жоқ",expected:"Бос уақытты көру және demo booking",success:"Кесте conflict-сіз көрсетіледі",contact:"Жанар Ай, процесс feedback",deadline:"2026-10-21",skills:["UI","JavaScript","Scheduling"],score:100,status:"Ашық",industry:"HealthTech"},
+{id:110,title:"Wellness habit tracker",company:"HealthWay",owner:"Мирас Төл",ownerId:"seed-health-2",desc:"Күнделікті жалпы wellness әдеттерін белгілеуге арналған demo tracker.",users:"Wellness қолданушылары",data:"Demo habit list",constraints:"Медициналық кеңес бермейді",expected:"Habit check-in және weekly summary",success:"7 күндік demo прогресс анық көрсетіледі",contact:"Мирас Төл, product feedback",deadline:"2026-10-29",skills:["JavaScript","UX","Charts"],score:100,status:"Ашық",industry:"HealthTech"},
+
+{id:111,title:"Контент күнтізбесін жоспарлау",company:"BrandLab",owner:"Алина Қас",ownerId:"seed-marketing-1",desc:"Маркетинг командасына контент идеяларын апта бойынша жоспарлау.",users:"SMM және маркетинг мамандары",data:"Demo campaign және content topics",constraints:"Social API интеграциясы міндетті емес",expected:"Calendar, status және channel filter",success:"Контентті апта және канал бойынша сүзуге болады",contact:"Алина Қас, campaign feedback",deadline:"2026-10-18",skills:["JavaScript","UI","Marketing"],score:100,status:"Ашық",industry:"Marketing"},
+{id:112,title:"Campaign нәтижесі dashboard",company:"AdPoint",owner:"Нұржан Ес",ownerId:"seed-marketing-2",desc:"Demo жарнама көрсеткіштерін бір dashboard-та салыстыру.",users:"Маркетолог және бизнес иесі",data:"Demo impressions, clicks, conversions",constraints:"Тек синтетикалық деректер",expected:"CTR, conversion және campaign comparison",success:"3 KPI дұрыс есептеледі",contact:"Нұржан Ес, analytics feedback",deadline:"2026-10-26",skills:["Analytics","Charts","JavaScript"],score:100,status:"Ашық",industry:"Marketing"},
+
+{id:113,title:"Жеткізу маршруттарын бақылау",company:"JetLog",owner:"Асқар Тілек",ownerId:"seed-log-1",desc:"Demo жеткізулердің статусын карта/тізім форматында бақылау.",users:"Логист және диспетчер",data:"Demo orders, locations және statuses",constraints:"Live GPS міндетті емес",expected:"Order status және маршрут summary",success:"10 demo order статуспен дұрыс көрінеді",contact:"Асқар Тілек, logistics feedback",deadline:"2026-10-23",skills:["JavaScript","Maps","Data"],score:100,status:"Ашық",industry:"Logistics"},
+{id:114,title:"Қойма қалдығын ескерту жүйесі",company:"StockFlow",owner:"Айбек Жол",ownerId:"seed-log-2",desc:"Қоймадағы demo тауар саны азайғанда ескерту көрсететін dashboard.",users:"Қойма менеджері",data:"Demo SKU және stock levels",constraints:"ERP интеграциясы қажет емес",expected:"Low-stock list және category filter",success:"Threshold төмен SKU автоматты белгіленеді",contact:"Айбек Жол, warehouse feedback",deadline:"2026-10-30",skills:["JavaScript","Data","Dashboard"],score:100,status:"Ашық",industry:"Logistics"},
+
+{id:115,title:"Қызмет көрсету кезегін цифрландыру",company:"CityService",owner:"Гүлназ Рах",ownerId:"seed-other-1",desc:"Келушілерге demo электронды кезек нөмірін және статусын көрсету.",users:"Келушілер және операторлар",data:"Demo queue records",constraints:"Web demo; hardware қажет емес",expected:"Queue number, status және estimated order",success:"Кезек реті дұрыс жаңарады",contact:"Гүлназ Рах, service feedback",deadline:"2026-10-20",skills:["JavaScript","UI"],score:100,status:"Ашық",industry:"Other"},
+{id:116,title:"Volunteer matching board",company:"Community Hub",owner:"Темір Әділ",ownerId:"seed-other-2",desc:"Волонтерлік мүмкіндіктер мен дағдыларды сәйкестендіретін ашық board.",users:"Волонтерлер және ұйымдар",data:"Demo opportunities және skill tags",constraints:"AI автоматты тағайындамайды",expected:"Filter және recommendation explanation",success:"Қолданушы барлық мүмкіндікті көріп, өзі таңдайды",contact:"Темір Әділ, community feedback",deadline:"2026-10-31",skills:["JavaScript","UX","Matching"],score:100,status:"Ашық",industry:"Other"}
+];
+directionDemoTasks.forEach(t=>{if(!tasks.some(x=>x.id===t.id))tasks.push(t)});
+save();
+
+function save(){localStorage.setItem("im_tasks",JSON.stringify(tasks));localStorage.setItem("im_proposals",JSON.stringify(proposals));localStorage.setItem("im_peer_reviews",JSON.stringify(peerReviews));localStorage.setItem("im_profiles",JSON.stringify(profiles))}
+function pickRole(r){selectedRole=r;localStorage.setItem("im_selected_role",r);document.querySelectorAll(".role-choice").forEach(x=>x.classList.toggle("active",x.dataset.role===r));$("authOrgLabel").textContent=r==="business"?"Компания атауы":"Мамандық / команда";$("authOrg").placeholder=r==="business"?"Мысалы: TechNova":"Мысалы: Физика-Информатика";$("industryWrap").classList.toggle("hidden",r!=="business")}
+function login(){
+ let name=$("authName").value.trim(),org=$("authOrg").value.trim();
+ if(!name){alert("Аты-жөніңізді енгізіңіз");return}
+ let industry=selectedRole==="business"?$("authIndustry").value:"";
+ let existing=profiles.find(p=>p.name.toLowerCase()===name.toLowerCase()&&p.role===selectedRole);
+ if(existing){
+   user={id:existing.id,role:selectedRole,name,org:org||existing.org,industry:existing.industry||industry};
+   existing.org=user.org; if(industry) existing.industry=industry;
+ }else{
+   user={id:"u-"+Date.now(),role:selectedRole,name,org,industry};
+   profiles.push({id:user.id,role:user.role,name:user.name,org:user.org,industry,skills:"",projects:"",github:"",bio:"",cv:"",cvName:"",experience:"",website:"",location:"",responseRate:"100%",verified:false});
+ }
+ localStorage.setItem("im_user",JSON.stringify(user));save();start()
+}
+function logout(){localStorage.removeItem("im_user");user=null;pickRole(localStorage.getItem("im_selected_role")||"student");$("app").classList.add("hidden");$("auth").classList.remove("hidden");$("aiFab").classList.add("hidden")}
+function start(){if(!user)return;$("auth").classList.add("hidden");$("app").classList.remove("hidden");$("aiFab").classList.remove("hidden");$("topName").textContent=user.name;$("topOrg").textContent=user.org||"";$("avatar").textContent=user.name.charAt(0).toUpperCase();$("roleText").textContent=user.role==="business"?"Бизнес өкілі режимі":"Студент режимі";buildNav();renderAll();go("dashboard")}
+function buildNav(){
+ let items=user.role==="business"?
+ [["dashboard","Басты бет"],["create","Жаңа тапсырма"],["rating","AI рейтинг"],["catalog","Каталог"],["profiles","Профильдер"],["deadlines","Дедлайндар"],["proposals","Ұсыныстар"],["reviews","Пікірлер"],["myprofile","Менің профилім"]]:
+ [["dashboard","Басты бет"],["catalog","Каталог"],["profiles","Студенттер"],["deadlines","Дедлайндар"],["proposals","Менің ұсыныстарым"],["reviews","Пікірлер"],["myprofile","Менің профилім"]];
+ $("nav").innerHTML=items.map(x=>`<button data-page="${x[0]}" onclick="go('${x[0]}')">● <span>${x[1]}</span></button>`).join("")
+}
+function go(id){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));$(id).classList.add("active");document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===id));let b=document.querySelector(`#nav button[data-page="${id}"] span`);$("pageTitle").textContent=b?b.textContent:"IdeaMatch";renderAll()}
+function renderAll(){renderDashboard();renderCreate();renderRating();renderCatalog();renderProposals();renderProfiles();renderReviews();renderMyProfile();renderDeadlines();renderNotifications()}
+function renderDashboard(){let mine=tasks.filter(t=>t.ownerId===user.id),myProps=proposals.filter(p=>p.studentId===user.id);$("dashboard").innerHTML=`<h1>Сәлем, ${esc(user.name)}!</h1><p class="muted">${user.role==="business"?"Өз бизнес тапсырмаларыңызды басқарып, студенттердің ұсыныстарын қарай аласыз.":"Ашық бизнес тапсырмаларын қарап, шешім ұсына аласыз."}</p><div class="grid"><div class="card stat"><span class="muted">${user.role==="business"?"Менің тапсырмаларым":"Ашық тапсырмалар"}</span><br><b>${user.role==="business"?mine.length:tasks.filter(t=>t.status==="Ашық").length}</b></div><div class="card stat"><span class="muted">${user.role==="business"?"Келген ұсыныстар":"Менің proposal-дарым"}</span><br><b>${user.role==="business"?proposals.filter(p=>mine.some(t=>t.id===p.taskId)).length:myProps.length}</b></div><div class="card stat"><span class="muted">Профильдер</span><br><b>${profiles.length}</b></div></div>${user.role==="business"?`<div class="card"><h3>Бизнес аналитикасы</h3><div class="grid"><div><b>${mine.filter(t=>t.status==="Ашық").length}</b><div class="small muted">Ашық тапсырма</div></div><div><b>${proposals.filter(p=>mine.some(t=>t.id===p.taskId)&&p.status==="Қаралуда").length}</b><div class="small muted">Қаралатын proposal</div></div><div><b>${esc(user.industry||profiles.find(p=>p.id===user.id)?.industry||"—")}</b><div class="small muted">Бизнес саласы</div></div></div></div>`:""}
+<div class="card"><h3>${user.role==="business"?"Бизнес flow":"Студент flow"}</h3><p>${user.role==="business"?"Тапсырма құру → жариялау → студент proposal-дарын көру → Accept/Reject → пікір қалдыру":"Каталог → тапсырманы көру → proposal жіберу → нәтиже → басқа студенттерді бағалау"}</p></div>`}
+function renderCreate(){
+ if(user.role!=="business"){$("create").innerHTML="";return}
+ $("create").innerHTML=`<div class="card"><h2>Жаңа бизнес тапсырмасы</h2>
+ <p class="muted">Алдымен бастапқы мәселені жазыңыз. AI оны нақты Task Card жасау үшін сұрақтарға бөледі.</p>
+ <label>Бастапқы бизнес мәселесі</label><textarea id="tDesc" placeholder="Мысалы: Студенттердің практикаға өтініш беру процесін жеңілдеткіміз келеді."></textarea>
+ <button class="secondary" style="margin-top:10px" onclick="showClarifying()">AI нақтылау сұрақтары</button>
+ <div id="clarifyBox"></div>
+ <label>Task Card атауы</label><input id="tTitle">
+ <div class="grid2"><div><label>Пайдаланушылар</label><input id="tUsers"></div><div><label>Деректер</label><input id="tData"></div></div>
+ <div class="grid2"><div><label>Шектеулер</label><input id="tConstraints"></div><div><label>Күтілетін нәтиже</label><input id="tExpected"></div></div>
+ <div class="grid2"><div><label>Табыс критерийлері</label><input id="tSuccess"></div><div><label>Бизнес контакті</label><input id="tContact" value="${esc(user.name)}"></div></div>
+ <div class="grid2"><div><label>Дедлайн</label><input id="tDeadline" type="date"></div><div><label>Қажетті skills</label><input id="tSkills" placeholder="JavaScript, UI/UX"></div></div>
+ <button class="primary" style="margin-top:14px" onclick="createTask()">Task Card жариялау</button></div>`
+}
+function showClarifying(){
+ const q=["Негізгі мәселе нақты неде?","Негізгі пайдаланушылар кімдер?","Қандай нәтиже күтесіз?","Қандай деректер қолжетімді?","Қандай шектеулер бар?","Нәтиже қандай критериймен бағаланады?"];
+ $("clarifyBox").innerHTML=`<div class="card" style="margin-top:12px"><b>AI нақтылау сұрақтары</b>${q.map((x,i)=>`<div class="question">${i+1}. ${x}</div>`).join("")}</div>`
+}
+function calcScore(t){
+ let s=0;if(t.desc)s+=20;if(t.data)s+=20;if(t.expected)s+=15;if(t.success)s+=15;if(t.constraints)s+=10;if(t.users)s+=10;if(t.contact)s+=10;return s
+}
+function scoreLevel(s){return s<40?"Жоба":s<70?"Жұмыс":s<90?"Дайын":"Басым"}
+function createTask(){
+ let title=$("tTitle").value.trim(),desc=$("tDesc").value.trim();if(!title||!desc){alert("Тақырып пен мәселені толтырыңыз");return}
+ let t={id:Date.now(),title,desc,users:$("tUsers").value.trim(),data:$("tData").value.trim(),constraints:$("tConstraints").value.trim(),expected:$("tExpected").value.trim(),success:$("tSuccess").value.trim(),contact:$("tContact").value.trim(),deadline:$("tDeadline").value||"—",skills:$("tSkills").value.split(",").map(x=>x.trim()).filter(Boolean),status:"Ашық",owner:user.name,ownerId:user.id,company:user.org||user.name,industry:user.industry||profiles.find(p=>p.id===user.id)?.industry||"Other",confirmed:true};
+ t.score=calcScore(t);tasks.unshift(t);save();renderAll();go("rating")
+}
+function renderRating(){
+ if(!$("rating"))return;
+ if(user.role!=="business"){$("rating").innerHTML="";return}
+ let mine=tasks.filter(t=>t.ownerId===user.id);
+ $("rating").innerHTML=`<h2>AI рейтинг</h2><p class="muted">AI тек Task Card толықтығын бағалайды. Факт ойдан қоспайды.</p>`+(mine.length?mine.map(t=>{
+ let missing=[];[["Деректер","data"],["Күтілетін нәтиже","expected"],["Табыс критерийлері","success"],["Шектеулер","constraints"],["Пайдаланушылар","users"],["Бизнес контакті","contact"]].forEach(x=>{if(!t[x[1]])missing.push(x[0])});
+ return `<div class="card"><div class="row between"><div><b>${esc(t.title)}</b><div class="small muted">${scoreLevel(t.score||0)}</div></div><b class="score">${t.score||0}/100</b></div><div class="progress"><i style="width:${t.score||0}%"></i></div>${missing.length?`<p class="missing">Толықтыру керек: ${missing.join(", ")}</p>`:`<p class="small" style="color:var(--green)">Task Card толық.</p>`}<p class="small muted">Контекст 20 · Деректер 20 · Күтілетін нәтиже 15 · Табыс критерийлері 15 · Шектеулер 10 · Пайдаланушылар 10 · Контакт 10</p><button class="secondary" onclick="go('catalog');setTimeout(()=>editTaskCard(${t.id}),0)">Толықтыру / рейтингті көтеру</button></div>`
+ }).join(""):`<div class="card muted">Алдымен тапсырма жасаңыз.</div>`)
+}
+function taskIndustry(t){
+ let owner=profiles.find(p=>p.id===t.ownerId);
+ return t.industry||owner?.industry||"Other"
+}
+function studentMatch(t){
+ let sp=profiles.find(p=>p.id===user.id)||{},skills=(sp.skills||"").toLowerCase(),hits=(t.skills||[]).filter(s=>skills.includes(String(s).toLowerCase())).length;
+ return Math.min(98,50+hits*15+(t.score>=70?8:0))
+}
+function renderCatalog(){
+ let industry=$("catalogIndustry")?.value||"all",level=$("catalogLevel")?.value||"all",sort=$("catalogSort")?.value||"score";
+ let list=[...tasks];
+ if(industry!=="all")list=list.filter(t=>taskIndustry(t)===industry);
+ if(level!=="all")list=list.filter(t=>scoreLevel(t.score||0)===level);
+ if(sort==="score")list.sort((a,b)=>(b.score||0)-(a.score||0));
+ if(sort==="deadline")list.sort((a,b)=>String(a.deadline).localeCompare(String(b.deadline)));
+ let industries=[...new Set(tasks.map(taskIndustry))].filter(Boolean);
+ $("catalog").innerHTML=`<h2>Тапсырмалар каталогы</h2>
+ <p class="muted">${user.role==="student"?"Барлық жарияланған тапсырма ашық. Төмен рейтингті тапсырма да жасырылмайды және оған proposal беруге болады.":"Өз тапсырмаңызды басқарасыз. Басқа бизнестің тапсырмасы оқу режимінде."}</p>
+ <div class="case-tools">
+  <select id="catalogIndustry" onchange="renderCatalog()"><option value="all">Барлық салалар</option>${industries.map(x=>`<option value="${esc(x)}" ${industry===x?"selected":""}>${esc(x)}</option>`).join("")}</select>
+  <select id="catalogLevel" onchange="renderCatalog()"><option value="all">Барлық деңгей</option>${["Жоба","Жұмыс","Дайын","Басым"].map(x=>`<option ${level===x?"selected":""}>${x}</option>`).join("")}</select>
+  <select id="catalogSort" onchange="renderCatalog()"><option value="score" ${sort==="score"?"selected":""}>Рейтинг бойынша</option><option value="deadline" ${sort==="deadline"?"selected":""}>Дедлайн бойынша</option></select>
+ </div>`+
+ list.map((t,i)=>`<div class="card ${user.role==="student"&&studentMatch(t)>=70?"recommend":""}">
+  <div class="row between"><div><h3>${esc(t.title)}</h3><div class="task-owner">${esc(t.company)} · ${esc(t.owner)} · ${esc(taskIndustry(t))}</div></div><div><span class="rank-badge">#${i+1}</span> <span class="score">${t.score||0}/100</span></div></div>
+  <p>${esc(t.desc)}</p>
+  ${t.users?`<p class="small"><b>Пайдаланушылар:</b> ${esc(t.users)}</p>`:""}
+  ${t.expected?`<p class="small"><b>Күтілетін нәтиже:</b> ${esc(t.expected)}</p>`:""}
+  <div>${(t.skills||[]).map(s=>`<span class="tag">${esc(s)}</span>`).join("")}</div>
+  <p class="small muted">Деңгей: ${scoreLevel(t.score||0)} · Ұсыныстар: ${proposals.filter(p=>p.taskId===t.id).length} · Дедлайн: ${esc(t.deadline)} · ${esc(t.status)}</p>
+  ${user.role==="student"?`<div class="notice small"><b>AI Recommendation:</b> ${studentMatch(t)}% сәйкестік. Бұл тек ұсыныс, тапсырманы студент өзі таңдайды.</div>`:""}
+  <div class="row">${user.role==="student"?`<button class="primary" onclick="proposalForm(${t.id})">Шешім ұсыну</button>`:(t.ownerId===user.id?`<button class="secondary" onclick="editTaskCard(${t.id})">Task Card өзгерту</button>`:`<span class="notice small">Басқа бизнестің тапсырмасы — өзгертуге болмайды</span>`)}</div>
+ </div>`).join("")
+}
+
+let editingTaskId=null;
+function editTaskCard(id){
+ if(user.role!=="business")return;
+ let t=tasks.find(x=>x.id===id);if(!t||t.ownerId!==user.id){alert("Тек өз тапсырмаңызды өзгерте аласыз");return}
+ editingTaskId=id;
+ $("catalog").innerHTML=`<button class="secondary" onclick="renderCatalog()">← Каталог</button>
+ <div class="grid2" style="margin-top:12px">
+  <div class="card">
+   <h2>Task Card редакциялау</h2>
+   <p class="muted">Өзгерістерді бизнес өкілі өзі растайды. AI жаңа факт қоспайды.</p>
+   <label>Атауы</label><input id="eTitle" value="${esc(t.title)}" oninput="liveRecalc()">
+   <label>Контекст / қажеттілік</label><textarea id="eDesc" oninput="liveRecalc()">${esc(t.desc||"")}</textarea>
+   <div class="edit-grid"><div><label>Пайдаланушылар</label><input id="eUsers" value="${esc(t.users||"")}" oninput="liveRecalc()"></div><div><label>Деректер</label><input id="eData" value="${esc(t.data||"")}" oninput="liveRecalc()"></div></div>
+   <div class="edit-grid"><div><label>Шектеулер</label><input id="eConstraints" value="${esc(t.constraints||"")}" oninput="liveRecalc()"></div><div><label>Күтілетін нәтиже</label><input id="eExpected" value="${esc(t.expected||"")}" oninput="liveRecalc()"></div></div>
+   <div class="edit-grid"><div><label>Табыс критерийлері</label><input id="eSuccess" value="${esc(t.success||"")}" oninput="liveRecalc()"></div><div><label>Бизнес контакті</label><input id="eContact" value="${esc(t.contact||"")}" oninput="liveRecalc()"></div></div>
+   <div class="edit-grid"><div><label>Дедлайн</label><input id="eDeadline" type="date" value="${t.deadline&&t.deadline!=="—"?esc(t.deadline):""}"></div><div><label>Skills</label><input id="eSkills" value="${esc((t.skills||[]).join(", "))}"></div></div>
+   <button class="primary" style="margin-top:14px" onclick="confirmTaskEdit()">Өзгерісті растау және жариялау</button>
+  </div>
+  <div><div id="liveScoreBox" class="live-score"></div></div>
+ </div>`;
+ liveRecalc()
+}
+function editDraft(){
+ return {desc:$("eDesc")?.value.trim()||"",data:$("eData")?.value.trim()||"",expected:$("eExpected")?.value.trim()||"",success:$("eSuccess")?.value.trim()||"",constraints:$("eConstraints")?.value.trim()||"",users:$("eUsers")?.value.trim()||"",contact:$("eContact")?.value.trim()||""}
+}
+function liveRecalc(){
+ if(!$("liveScoreBox"))return;let d=editDraft(),s=calcScore(d),missing=[];
+ [["Контекст","desc"],["Деректер","data"],["Күтілетін нәтиже","expected"],["Табыс критерийлері","success"],["Шектеулер","constraints"],["Пайдаланушылар","users"],["Бизнес контакті","contact"]].forEach(x=>{if(!d[x[1]])missing.push(x[0])});
+ $("liveScoreBox").innerHTML=`<h3>Live AI рейтинг</h3><div class="row between"><b>${scoreLevel(s)}</b><b class="score">${s}/100</b></div><div class="progress"><i style="width:${s}%"></i></div><p class="small muted">Өрістерді толтырған сайын рейтинг автоматты түрде қайта есептеледі.</p>${missing.length?`<p class="missing">Рейтингті көтеру үшін: ${missing.join(", ")}</p>`:`<p style="color:var(--green)">Барлық рейтинг өрісі толтырылған.</p>`}`
+}
+function confirmTaskEdit(){
+ let t=tasks.find(x=>x.id===editingTaskId);if(!t||t.ownerId!==user.id)return;
+ Object.assign(t,{title:$("eTitle").value.trim(),desc:$("eDesc").value.trim(),users:$("eUsers").value.trim(),data:$("eData").value.trim(),constraints:$("eConstraints").value.trim(),expected:$("eExpected").value.trim(),success:$("eSuccess").value.trim(),contact:$("eContact").value.trim(),deadline:$("eDeadline").value||"—",skills:$("eSkills").value.split(",").map(x=>x.trim()).filter(Boolean)});
+ t.score=calcScore(t);t.confirmed=true;save();renderAll();renderCatalog();alert("Task Card расталды. Рейтинг қайта есептелді: "+t.score+"/100")
+}
+function editOwnTask(id){let t=tasks.find(x=>x.id===id);if(!t||t.ownerId!==user.id)return;let d=prompt("Тапсырма сипаттамасын өзгерту:",t.desc);if(d!==null){t.desc=d;save();renderAll()}}
+function proposalForm(id){let t=tasks.find(x=>x.id===id);$("catalog").innerHTML=`<button class="secondary" onclick="renderCatalog()">← Артқа</button><div class="card"><h2>${esc(t.title)}</h2><p>${esc(t.desc)}</p><div class="notice">Бұл тапсырманы өзгерте алмайсыз. Тек өз шешіміңізді жібересіз.</div><label>Шешім идеясы</label><textarea id="pIdea"></textarea><label>Орындау жоспары</label><textarea id="pPlan"></textarea><label>Технологиялар</label><input id="pTech"><div class="grid2"><div><label>Prototype / GitHub</label><input id="pLink"></div><div><label>Орындау мерзімі</label><input id="pDeadline" type="date"></div></div><button class="primary" style="margin-top:14px" onclick="submitProposal(${id})">Proposal жіберу</button></div>`}
+function submitProposal(taskId){let idea=$("pIdea").value.trim();if(!idea){alert("Шешім идеясын жазыңыз");return}proposals.unshift({id:Date.now(),taskId,studentId:user.id,student:user.name,idea,plan:$("pPlan").value,tech:$("pTech").value,link:$("pLink").value,deliveryDeadline:$("pDeadline")?.value||"",status:"Қаралуда"});save();renderAll();go("proposals")}
+function renderProposals(){let list=user.role==="student"?proposals.filter(p=>p.studentId===user.id):proposals.filter(p=>{let t=tasks.find(x=>x.id===p.taskId);return t&&t.ownerId===user.id});$("proposals").innerHTML=`<h2>${user.role==="student"?"Менің ұсыныстарым":"Студент ұсыныстары"}</h2>`+(list.length?list.map(p=>{let t=tasks.find(x=>x.id===p.taskId);return `<div class="card"><div class="row between"><div><b>${esc(t?.title||"Тапсырма")}</b><div class="small muted">${esc(p.student)}</div></div><span class="tag">${esc(p.status)}</span></div><p><b>Идея:</b> ${esc(p.idea)}</p><p><b>Жоспар:</b> ${esc(p.plan)}</p><p class="small"><b>Технологиялар:</b> ${esc(p.tech||"—")} · <b>Орындау мерзімі:</b> ${esc(p.deliveryDeadline||"—")} · <b>Prototype/GitHub:</b> ${esc(p.link||"—")}</p>${user.role==="business"?(()=>{let sp=profiles.find(x=>x.id===p.studentId)||{};let task=tasks.find(x=>x.id===p.taskId)||{};let skillText=(sp.skills||"").toLowerCase();let hits=(task.skills||[]).filter(s=>skillText.includes(String(s).toLowerCase())).length;let match=Math.min(95,55+hits*12);return `<div class="notice"><b>Студент профилі</b><br>CV: ${esc(sp.cvName||"жүктелмеген")} · Skills: ${esc(sp.skills||"—")}<br>Алдыңғы жобалар: ${esc(sp.projects||"—")}<br>Студент рейтингі: ${avgFor(sp.id)}/5<br><b>AI Match ұсынысы: ${match}%</b> <span class="small muted">(тек ұсыныс, соңғы шешім бизнеске тиесілі)</span></div><div class="row"><button class="good" onclick="decision(${p.id},'Қабылданды')">Accept</button><button class="danger" onclick="decision(${p.id},'Қабылданбады')">Reject</button><button class="secondary" onclick="businessFeedback('${sp.id}')">Feedback</button></div>`})():""}</div>`}).join(""):`<div class="card muted">Әзірге ұсыныс жоқ.</div>`)}
+function businessFeedback(studentId){
+ if(user.role!=="business")return;
+ let sp=profiles.find(x=>x.id===studentId);if(!sp)return;
+ let s=Number(prompt(`${sp.name} үшін бизнес бағасы (1–5):`,"5"));if(!Number.isFinite(s)||s<1||s>5)return;
+ let text=prompt("Сапа, коммуникация, дедлайн бойынша пікір:","")||"";
+ peerReviews.unshift({id:Date.now(),fromId:user.id,from:user.name,targetId:sp.id,target:sp.name,score:s,text,type:"business"});
+ save();renderAll()
+}
+function decision(id,status){let p=proposals.find(x=>x.id===id),t=tasks.find(x=>x.id===p.taskId);if(!t||t.ownerId!==user.id){alert("Шешімді тек тапсырма иесі қабылдайды");return}p.status=status;save();renderAll()}
+function avgFor(id){let a=peerReviews.filter(r=>r.targetId===id);return a.length?(a.reduce((s,r)=>s+r.score,0)/a.length).toFixed(1):"—"}
+function renderProfiles(){let list=user.role==="student"?profiles.filter(p=>p.role==="student"):profiles;$("profiles").innerHTML=`<h2>Профильдер</h2><p class="muted">${user.role==="student"?"Басқа студенттерді көріп, 1–5 аралығында бағалай аласыз.":"Студент және бизнес профильдерін қарай аласыз."}</p>`+list.map(p=>`<div class="card"><div class="row between"><div><h3>${esc(p.name)}</h3><div class="muted">${esc(p.org)} · ${p.role==="student"?"Студент":"Бизнес"}</div></div><b>${avgFor(p.id)}/5</b></div><p>${esc(p.bio)}</p><p><b>Skills / сала:</b> ${esc(p.skills||p.industry||"—")}</p><p><b>Жобалар:</b> ${esc(p.projects||"—")}</p>${p.role==="student"?`<p><b>CV:</b> ${esc(p.cvName||"жүктелмеген")} · <b>Portfolio:</b> ${esc(p.github||"—")}</p>`:`<p><b>Сала:</b> ${esc(p.industry||"—")} · <b>Сайт:</b> ${esc(p.website||"—")}</p>`}${user.role==="student"&&p.role==="student"&&p.id!==user.id?`<button class="primary" onclick="rateStudent('${p.id}')">Бағалау / пікір жазу</button>`:""}${peerReviews.filter(r=>r.targetId===p.id).slice(0,3).map(r=>`<div class="review"><b>${esc(r.from)} → ${esc(p.name)}</b> · ${r.score}/5<br><span class="small">${esc(r.text)}</span></div>`).join("")}</div>`).join("")}
+function rateStudent(id){let p=profiles.find(x=>x.id===id);if(!p||user.role!=="student"||id===user.id)return;let s=Number(prompt(`${p.name} үшін баға (1–5):`,"5"));if(s<1||s>5||!Number.isFinite(s))return;let text=prompt("Пікір жазыңыз:","")||"";peerReviews.unshift({id:Date.now(),fromId:user.id,from:user.name,targetId:id,target:p.name,score:s,text});save();renderAll()}
+function renderReviews(){$("reviews").innerHTML=`<h2>Пікірлер</h2>`+(peerReviews.length?peerReviews.map(r=>`<div class="card"><b>${esc(r.from)} → ${esc(r.target)}</b><span class="tag">${r.score}/5</span><p>${esc(r.text)}</p></div>`).join(""):`<div class="card muted">Әзірге пікір жоқ.</div>`)}
+function renderMyProfile(){
+ let p=profiles.find(x=>x.id===user.id);if(!p)return;
+ if(user.role==="student"){
+  $("myprofile").innerHTML=`<div class="card"><div class="row between"><div><h2>${esc(p.name)}</h2><div class="muted">${esc(p.org)} · Студент</div></div><b>${avgFor(p.id)}/5</b></div>
+  <label>Өзім туралы</label><textarea id="mBio">${esc(p.bio||"")}</textarea>
+  <div class="grid2"><div><label>Мамандық / команда</label><input id="mOrg" value="${esc(p.org||"")}"></div><div><label>Қала</label><input id="mLocation" value="${esc(p.location||"")}"></div></div>
+  <label>Skills</label><input id="mSkills" value="${esc(p.skills||"")}" placeholder="HTML, CSS, JavaScript, Python">
+  <label>Алдыңғы жобалар</label><textarea id="mProjects">${esc(p.projects||"")}</textarea>
+  <label>Тәжірибе / жетістіктер</label><textarea id="mExperience">${esc(p.experience||"")}</textarea>
+  <label>GitHub / Portfolio</label><input id="mGithub" value="${esc(p.github||"")}">
+  <label>CV</label><input id="cvFile" type="file" accept=".pdf,.doc,.docx" onchange="saveCVName(this)">
+  <div class="notice small">Қазіргі CV: <b id="cvCurrent">${esc(p.cvName||"жүктелмеген")}</b>. Студент CV-ын өзі кез келген уақытта ауыстыра алады.</div>
+  <button class="primary" style="margin-top:14px" onclick="saveProfile()">Профильді сақтау</button></div>`
+ }else{
+  $("myprofile").innerHTML=`<div class="card"><div class="row between"><div><h2>${esc(p.name)}</h2><div class="muted">${esc(p.org)} · Бизнес өкілі</div></div><span class="tag">${esc(p.industry||user.industry||"Business")}</span></div>
+  <label>Компания туралы</label><textarea id="mBio">${esc(p.bio||"")}</textarea>
+  <div class="grid2"><div><label>Компания атауы</label><input id="mOrg" value="${esc(p.org||"")}"></div><div><label>Бизнес саласы</label><select id="mIndustry">${["EdTech","IT","FinTech","E-commerce","HealthTech","Marketing","Logistics","Other"].map(x=>`<option ${x===(p.industry||user.industry)?"selected":""}>${x}</option>`).join("")}</select></div></div>
+  <div class="grid2"><div><label>Компания сайты</label><input id="mWebsite" value="${esc(p.website||"")}"></div><div><label>Орналасуы</label><input id="mLocation" value="${esc(p.location||"")}"></div></div>
+  <label>Негізгі бағыттар / қажетті skills</label><input id="mSkills" value="${esc(p.skills||"")}">
+  <label>Аяқталған жобалар / тәжірибе</label><textarea id="mProjects">${esc(p.projects||"")}</textarea>
+  <label>Бизнес тәжірибесі</label><textarea id="mExperience">${esc(p.experience||"")}</textarea>
+  <div class="notice"><b>Бизнес мүмкіндіктері:</b> тапсырма жариялау, AI Task Card рейтингі, студент CV/skills/portfolio қарау, proposal салыстыру, Accept/Reject, студентке feedback және рейтинг беру.</div>
+  <button class="primary" style="margin-top:14px" onclick="saveProfile()">Компания профилін сақтау</button></div>`
+ }
+}
+function saveCVName(input){let p=profiles.find(x=>x.id===user.id);if(input.files&&input.files[0]){p.cvName=input.files[0].name;p.cv="demo-local-file";save();$("cvCurrent").textContent=p.cvName}}
+function saveProfile(){
+ let p=profiles.find(x=>x.id===user.id);if(!p)return;
+ p.bio=$("mBio").value;p.org=$("mOrg").value;p.skills=$("mSkills").value;p.projects=$("mProjects").value;
+ p.experience=$("mExperience").value;p.location=$("mLocation").value;
+ if(user.role==="student"){p.github=$("mGithub").value}
+ else{p.industry=$("mIndustry").value;p.website=$("mWebsite").value;user.industry=p.industry}
+ user.org=p.org;localStorage.setItem("im_user",JSON.stringify(user));save();$("topOrg").textContent=user.org;renderAll();alert("Профиль сақталды")
+}
+function daysLeft(date){
+ if(!date||date==="—")return null;let d=new Date(date+"T23:59:59"),n=new Date();return Math.ceil((d-n)/86400000)
+}
+function renderDeadlines(){
+ if(!$("deadlines"))return;
+ let list=user.role==="business"?tasks.filter(t=>t.ownerId===user.id):tasks;
+ $("deadlines").innerHTML=`<h2>Дедлайндар</h2>`+list.map(t=>{let d=daysLeft(t.deadline);return `<div class="card row between"><div><b>${esc(t.title)}</b><div class="small muted">${esc(t.company)} · ${esc(t.deadline)}</div></div><span class="tag">${d===null?"Мерзім жоқ":d<0?"Аяқталды":d+" күн қалды"}</span></div>`}).join("")
+}
+function renderNotifications(){
+ let near=tasks.filter(t=>{let d=daysLeft(t.deadline);return d!==null&&d>=0&&d<=7});
+ $("notifyPanel").innerHTML=`<div class="row between"><b>Хабарламалар</b><button class="secondary" onclick="toggleNotifications()">×</button></div>`+(near.length?near.map(t=>`<div class="review"><b>${esc(t.title)}</b><div class="small">${daysLeft(t.deadline)} күн қалды</div></div>`).join(""):`<p class="muted">Жақын дедлайн жоқ.</p>`)
+}
+function toggleNotifications(){$("notifyPanel").classList.toggle("open")}
+function toggleAccess(){$("accessPanel").classList.toggle("open")}
+let fontScale=Number(localStorage.getItem("im_font")||100);
+function changeFont(n){fontScale=Math.max(80,Math.min(130,fontScale+n*10));document.documentElement.style.fontSize=fontScale+"%";localStorage.setItem("im_font",fontScale)}
+function readPage(){if(!("speechSynthesis" in window))return alert("Бұл браузер мәтінді оқуды қолдамайды.");speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(document.querySelector(".page.active")?.innerText||"");u.lang="kk-KZ";speechSynthesis.speak(u)}
+function setLanguage(l){
+ localStorage.setItem("im_lang",l);
+ if($("langSelect"))$("langSelect").value=l;
+ if($("authLangSelect"))$("authLangSelect").value=l;
+ if(user){renderAll()}
+ setTimeout(()=>applyUILanguage(l),0);
+}
+
+const IM_I18N={
+ru:{
+"Басты бет":"Главная","Жаңа тапсырма":"Новая задача","AI рейтинг":"AI-рейтинг","Каталог":"Каталог","Профильдер":"Профили","Студенттер":"Студенты","Дедлайндар":"Дедлайны","Ұсыныстар":"Предложения","Менің ұсыныстарым":"Мои предложения","Пікірлер":"Отзывы","Менің профилім":"Мой профиль",
+"Профильге кіру":"Войти в профиль","Идеядан — нақты мүмкіндікке.":"От идеи — к реальной возможности.","Бизнеске шешім, студентке тәжірибе: IdeaMatch-та әр жақсы идея өз командасын таба алады.":"Бизнесу — решение, студенту — опыт: в IdeaMatch каждая сильная идея может найти свою команду.","Идеяны мүмкіндікке айналдыратын орта":"Среда, превращающая идеи в возможности","Студент":"Студент","Бизнес өкілі":"Представитель бизнеса","Аты-жөні":"Имя и фамилия","Мамандық / команда":"Специальность / команда","Компания атауы":"Название компании","Бизнес саласы":"Сфера бизнеса","Кіру":"Войти","Шығу":"Выйти",
+"Қолжетімділік":"Доступность","Жоғары контраст":"Высокий контраст","Қарапайым режим":"Простой режим","Мәтінді оқу":"Прочитать текст","Хабарламалар":"Уведомления",
+"Менің тапсырмаларым":"Мои задачи","Ашық тапсырмалар":"Открытые задачи","Келген ұсыныстар":"Полученные предложения","Бизнес аналитикасы":"Бизнес-аналитика","Бизнес flow":"Сценарий бизнеса","Студент flow":"Сценарий студента",
+"Жаңа бизнес тапсырмасы":"Новая бизнес-задача","Бастапқы бизнес мәселесі":"Исходная бизнес-проблема","AI нақтылау сұрақтары":"Уточняющие вопросы AI","Task Card атауы":"Название Task Card","Пайдаланушылар":"Пользователи","Деректер":"Данные","Шектеулер":"Ограничения","Күтілетін нәтиже":"Ожидаемый результат","Табыс критерийлері":"Критерии успеха","Бизнес контакті":"Контакт бизнеса","Дедлайн":"Дедлайн","Қажетті skills":"Необходимые навыки","Task Card жариялау":"Опубликовать Task Card",
+"Тапсырмалар каталогы":"Каталог задач","Барлық салалар":"Все сферы","Барлық деңгей":"Все уровни","Рейтинг бойынша":"По рейтингу","Дедлайн бойынша":"По дедлайну","Шешім ұсыну":"Предложить решение","Task Card өзгерту":"Изменить Task Card","Task Card редакциялау":"Редактирование Task Card","Атауы":"Название","Контекст / қажеттілік":"Контекст / потребность","Өзгерісті растау және жариялау":"Подтвердить и опубликовать","Live AI рейтинг":"Текущий AI-рейтинг",
+"Шешім идеясы":"Идея решения","Орындау жоспары":"План выполнения","Технологиялар":"Технологии","Орындау мерзімі":"Срок выполнения","Proposal жіберу":"Отправить proposal","Студент ұсыныстары":"Предложения студентов","Студент профилі":"Профиль студента","Бағалау / пікір жазу":"Оценить / написать отзыв",
+"Өзім туралы":"О себе","Қала":"Город","Алдыңғы жобалар":"Предыдущие проекты","Тәжірибе / жетістіктер":"Опыт / достижения","Профильді сақтау":"Сохранить профиль","Компания туралы":"О компании","Компания сайты":"Сайт компании","Орналасуы":"Местоположение","Компания профилін сақтау":"Сохранить профиль компании","AI көмекші":"AI-помощник","IdeaMatch бойынша көмек":"Помощь по IdeaMatch","Жіберу":"Отправить",
+"Жоба":"Черновик","Жұмыс":"В работе","Дайын":"Готово","Басым":"Приоритет","Ашық":"Открыто","Қаралуда":"На рассмотрении","Қабылданды":"Принято","Қабылданбады":"Отклонено"
+},
+en:{
+"Басты бет":"Dashboard","Жаңа тапсырма":"New task","AI рейтинг":"AI rating","Каталог":"Catalog","Профильдер":"Profiles","Студенттер":"Students","Дедлайндар":"Deadlines","Ұсыныстар":"Proposals","Менің ұсыныстарым":"My proposals","Пікірлер":"Reviews","Менің профилім":"My profile",
+"Профильге кіру":"Sign in","Идеядан — нақты мүмкіндікке.":"From idea to real opportunity.","Бизнеске шешім, студентке тәжірибе: IdeaMatch-та әр жақсы идея өз командасын таба алады.":"Solutions for business, experience for students: on IdeaMatch every strong idea can find its team.","Идеяны мүмкіндікке айналдыратын орта":"A space that turns ideas into opportunities","Студент":"Student","Бизнес өкілі":"Business representative","Аты-жөні":"Full name","Мамандық / команда":"Major / team","Компания атауы":"Company name","Бизнес саласы":"Business industry","Кіру":"Sign in","Шығу":"Sign out",
+"Қолжетімділік":"Accessibility","Жоғары контраст":"High contrast","Қарапайым режим":"Simple mode","Мәтінді оқу":"Read aloud","Хабарламалар":"Notifications",
+"Менің тапсырмаларым":"My tasks","Ашық тапсырмалар":"Open tasks","Келген ұсыныстар":"Received proposals","Бизнес аналитикасы":"Business analytics","Бизнес flow":"Business flow","Студент flow":"Student flow",
+"Жаңа бизнес тапсырмасы":"New business task","Бастапқы бизнес мәселесі":"Initial business problem","AI нақтылау сұрақтары":"AI clarifying questions","Task Card атауы":"Task Card title","Пайдаланушылар":"Users","Деректер":"Data","Шектеулер":"Constraints","Күтілетін нәтиже":"Expected result","Табыс критерийлері":"Success criteria","Бизнес контакті":"Business contact","Дедлайн":"Deadline","Қажетті skills":"Required skills","Task Card жариялау":"Publish Task Card",
+"Тапсырмалар каталогы":"Task catalog","Барлық салалар":"All industries","Барлық деңгей":"All levels","Рейтинг бойынша":"By rating","Дедлайн бойынша":"By deadline","Шешім ұсыну":"Propose solution","Task Card өзгерту":"Edit Task Card","Task Card редакциялау":"Edit Task Card","Атауы":"Title","Контекст / қажеттілік":"Context / need","Өзгерісті растау және жариялау":"Confirm and publish","Live AI рейтинг":"Live AI rating",
+"Шешім идеясы":"Solution idea","Орындау жоспары":"Execution plan","Технологиялар":"Technologies","Орындау мерзімі":"Delivery deadline","Proposal жіберу":"Send proposal","Студент ұсыныстары":"Student proposals","Студент профилі":"Student profile","Бағалау / пікір жазу":"Rate / write review",
+"Өзім туралы":"About me","Қала":"City","Алдыңғы жобалар":"Previous projects","Тәжірибе / жетістіктер":"Experience / achievements","Профильді сақтау":"Save profile","Компания туралы":"About company","Компания сайты":"Company website","Орналасуы":"Location","Компания профилін сақтау":"Save company profile","AI көмекші":"AI assistant","IdeaMatch бойынша көмек":"IdeaMatch help","Жіберу":"Send",
+"Жоба":"Draft","Жұмыс":"Working","Дайын":"Ready","Басым":"Priority","Ашық":"Open","Қаралуда":"Under review","Қабылданды":"Accepted","Қабылданбады":"Rejected"
+}};
+const IM_KK={};Object.keys(IM_I18N.ru).forEach(k=>IM_KK[k]=k);
+function imTranslateText(text,l){
+ if(l==="kk")return text;
+ const d=IM_I18N[l]||{};
+ let out=text;
+ Object.keys(d).sort((a,b)=>b.length-a.length).forEach(k=>{out=out.split(k).join(d[k])});
+ return out;
+}
+function applyUILanguage(l){
+ document.documentElement.lang=l;
+ document.querySelectorAll("body *").forEach(el=>{
+   if(["SCRIPT","STYLE","OPTION"].includes(el.tagName))return;
+   [...el.childNodes].filter(n=>n.nodeType===3&&n.nodeValue.trim()).forEach(n=>{
+     if(!n.__kk)n.__kk=n.nodeValue;
+     n.nodeValue=imTranslateText(n.__kk,l);
+   });
+ });
+ document.querySelectorAll("input[placeholder],textarea[placeholder]").forEach(el=>{
+   if(!el.dataset.kkph)el.dataset.kkph=el.placeholder;
+   let ph=el.dataset.kkph;
+   const phMap={
+    "Мысалы: Асылай Құралбай":{ru:"Например: Асылай Куралбай",en:"Example: Assylay Kuralbay"},
+    "Физика-Информатика":{ru:"Физика-Информатика",en:"Physics-Informatics"},
+    "Мысалы: Студенттердің практикаға өтініш беру процесін жеңілдеткіміз келеді.":{ru:"Например: хотим упростить процесс подачи заявок студентов на практику.",en:"Example: we want to simplify the student internship application process."},
+    "JavaScript, UI/UX":{ru:"JavaScript, UI/UX",en:"JavaScript, UI/UX"},
+    "Сұрағыңызды жазыңыз...":{ru:"Напишите вопрос...",en:"Type your question..."}
+   };
+   el.placeholder=l==="kk"?ph:(phMap[ph]?.[l]||imTranslateText(ph,l));
+ });
+ if($("langSelect"))$("langSelect").value=l; if($("authLangSelect"))$("authLangSelect").value=l;
+}
+const __oldRenderAll=renderAll;
+renderAll=function(){__oldRenderAll();setTimeout(()=>applyUILanguage(localStorage.getItem("im_lang")||"kk"),0)}
+
+function toggleAI(){$("ai").classList.toggle("open")}
+function sendAI(){let q=$("aiInput").value.trim();if(!q)return;let box=$("aiMsgs");box.innerHTML+=`<div class="msg me">${esc(q)}</div>`;$("aiInput").value="";let x=q.toLowerCase(),a=x.includes("proposal")||x.includes("ұсыныс")?"Proposal-да шешім идеясы, жоспар, технология және prototype/GitHub сілтемесін көрсетіңіз.":x.includes("рейтинг")||x.includes("баға")?"Студенттер бір-бірін 1–5 баллмен бағалай алады. Баға мен пікір профильде кім жазғанымен бірге көрінеді.":x.includes("task")||x.includes("тапсыр")?"Бизнес тапсырма құрады. Студент оны көріп, өзгерте алмайды, тек proposal жібереді.":"IdeaMatch-та бизнес және студент рөлдері бөлек. Сұрағыңызды Task Card, proposal, профиль немесе рейтинг бойынша нақтылай аласыз.";setTimeout(()=>{box.innerHTML+=`<div class="msg bot">${a}</div>`;box.scrollTop=box.scrollHeight},150)}
+document.documentElement.style.fontSize=fontScale+"%";const initialLang=localStorage.getItem("im_lang")||"kk";$("langSelect").value=initialLang;if($("authLangSelect"))$("authLangSelect").value=initialLang;if($("authLangSelect"))$("authLangSelect").value=initialLang;pickRole(selectedRole);if(user)start();setTimeout(()=>applyUILanguage(initialLang),0);
+</script>
+</body>
+</html>
